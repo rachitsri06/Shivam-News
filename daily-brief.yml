@@ -1,0 +1,41 @@
+name: Daily Standards Brief (Shivam)
+
+# Runs every morning, rebuilds the brief, and publishes brief.json so Shivam
+# opens to today's edition. 01:30 UTC = 07:00 AM IST (GitHub cron is UTC-only).
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:        # also lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: write           # needed to commit the refreshed brief.json back to the repo
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install feedparser anthropic
+
+      - name: Build today's brief (writes standards_brief.html + brief.json)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python tourism_brief.py
+
+      - name: Publish brief.json for Shivam
+        run: |
+          git config user.name  "shivam-bot"
+          git config user.email "actions@github.com"
+          git add brief.json standards_brief.html
+          git commit -m "Brief: $(date -u +%Y-%m-%d)" || echo "no changes"
+          git push
+
+      # ---- OPTIONAL: also email yourself the HTML brief ----
+      # Add SMTP_* + MAIL_TO secrets and run with --email instead of the build step above:
+      #   run: python tourism_brief.py --email

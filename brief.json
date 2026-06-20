@@ -1,0 +1,160 @@
+{
+  "date": "Saturday, 20 June 2026",
+  "reader": "Rachit",
+  "summary": {
+    "headline": "Centre vs states: the standards map is shifting",
+    "spoken": "Here is your brief in twenty seconds. 9 items today across the desks, 2 flagged for action. The big one: From 16 Mar 2026 no fresh project-approval applications are accepted at construction/pre-construction stage. And the thread to watch is the centre versus the states on mandatory registration.",
+    "highlights": [
+      "From 16 Mar 2026 no fresh project-approval applications are accepted at construction/pre-construction stage.",
+      "Mandatory UTDB registration for hotels, homestays, B&Bs, agents & adventure ops; 5-year validity; homestay classification built in."
+    ]
+  },
+  "deepdive": {
+    "head": "The centre is going voluntary while the states go mandatory",
+    "intro": "NIDHI+ is a voluntary national scheme — and the Ministry has just narrowed it by ending project approvals. But several states are moving the opposite way: making registration compulsory, and in Uttarakhand's case running their own classification. Here's where each stands.",
+    "take": "The risk is NIDHI+ becoming one registry among many. The opportunity is to position it as the interoperable national spine that state systems plug into — a strong line for your reform note.",
+    "states": [
+      {
+        "name": "Centre · NIDHI+ (MoT)",
+        "vs": "The national scheme",
+        "mandatory": false,
+        "ownclass": true,
+        "validity": "Voluntary",
+        "note": "Voluntary star classification; project approvals for under-construction units stopped 16 March 2026."
+      },
+      {
+        "name": "Uttarakhand",
+        "vs": "Parallel regime",
+        "mandatory": true,
+        "ownclass": true,
+        "validity": "5-year + renewal",
+        "note": "2026 Rules: one mandatory framework for every unit, with homestay and B&B classification built in."
+      },
+      {
+        "name": "Rajasthan",
+        "vs": "State-run, lighter",
+        "mandatory": true,
+        "ownclass": false,
+        "validity": "Single-window",
+        "note": "Homestay Scheme 2026: fast digital approval, rooms raised 5 to 8, owner-residence rule dropped."
+      },
+      {
+        "name": "Uttar Pradesh",
+        "vs": "Layers on NIDHI+",
+        "mandatory": true,
+        "ownclass": false,
+        "validity": "Policy + NOC",
+        "note": "First dedicated state homestay/B&B policy; local-body NOC now mandatory on top of NIDHI+ listing."
+      },
+      {
+        "name": "Meghalaya",
+        "vs": "Own data registry",
+        "mandatory": true,
+        "ownclass": false,
+        "validity": "App-based",
+        "note": "Mandatory guest registration via the state tourism app, driven by visitor-safety concerns."
+      }
+    ]
+  },
+  "items": [
+    {
+      "desk": "NIDHI",
+      "source": "Ministry of Tourism",
+      "when": "16 Mar",
+      "flag": "high",
+      "title": "MoT discontinues Voluntary Scheme of Project Approvals for under-construction hospitality units",
+      "sowhat": "From 16 Mar 2026 no fresh project-approval applications are accepted at construction/pre-construction stage.",
+      "desk_line": "Directly changes NIDHI+ intake; a concrete line for your Secretary reform briefing and work-order narrative.",
+      "link": "https://nidhi.tourism.gov.in/",
+      "pdf": ""
+    },
+    {
+      "desk": "NIDHI",
+      "source": "Travel Trade Journal",
+      "when": "recent",
+      "flag": "watch",
+      "title": "Ministry tells Lok Sabha NIDHI+ is the single online system for classification & TSP recognition",
+      "sowhat": "MoT frames NIDHI+ as the system of record for classifying accommodation units and recognising service providers.",
+      "desk_line": "Useful framing language for positioning NIDHI+ value and the unpaid work-order case.",
+      "link": "https://traveltradejournal.com/ministry-of-tourism-streamlines-hospitality-approvals-and-classification-via-nidhi-portal/",
+      "pdf": ""
+    },
+    {
+      "desk": "STATE",
+      "source": "Pioneer Edge",
+      "when": "this week",
+      "flag": "high",
+      "title": "Uttarakhand notifies Tourism & Travel Business Registration Rules 2026 — one framework for all units",
+      "sowhat": "Mandatory UTDB registration for hotels, homestays, B&Bs, agents & adventure ops; 5-year validity; homestay classification built in.",
+      "desk_line": "A state building a parallel registration + classification regime beside NIDHI+ — the central-vs-state interface is your core domain.",
+      "link": "https://pioneeredge.in/new-tourism-registration-rules-in-force-homestays-under-one-framework/",
+      "pdf": ""
+    },
+    {
+      "desk": "STATE",
+      "source": "Business Standard",
+      "when": "recent",
+      "flag": "watch",
+      "title": "Rajasthan Homestay Scheme 2026: single-window digital approval, rooms raised 5→8",
+      "sowhat": "Owner-residence requirement dropped; caretaker model allowed; faster digital registration to grow rural homestays.",
+      "desk_line": "Light-touch state compliance model + the rural/community-tourism livelihood framing you're positioning around.",
+      "link": "https://www.business-standard.com/industry/news/rajasthan-unveils-homestay-scheme-2026-to-boost-tourism-126022300883_1.html",
+      "pdf": ""
+    },
+    {
+      "desk": "STATE",
+      "source": "Deccan Herald",
+      "when": "recent",
+      "flag": "watch",
+      "title": "UP approves first dedicated Homestay & B&B Policy; mandates local-body NOCs",
+      "sowhat": "Until now UP units registered via NIDHI+; new policy layers local NOCs and state incentives on top.",
+      "desk_line": "Shows states layering local compliance over NIDHI+ — relevant to SAATHI self-cert scope.",
+      "link": "https://www.deccanherald.com/india/uttar-pradesh/up-govt-approves-homestay-bed-and-breakfast-policy-to-boost-tourism-3569077",
+      "pdf": ""
+    },
+    {
+      "desk": "STATE",
+      "source": "NewsOnAir",
+      "when": "recent",
+      "flag": "watch",
+      "title": "Meghalaya makes guest registration via state tourism app compulsory",
+      "sowhat": "Safety-driven mandatory digital guest registration across homestays, resorts and landlords.",
+      "desk_line": "Compliance-as-safety angle; a state digital guest registry that parallels NIDHI's data role.",
+      "link": "https://www.newsonair.gov.in/meghalaya-govt-directs-mandatory-visitor-registration-after-murder-incident",
+      "pdf": ""
+    },
+    {
+      "desk": "GLOBAL",
+      "source": "Hotel Management",
+      "when": "recent",
+      "flag": "watch",
+      "title": "WTTC 'Hotel Sustainability Basics' — 12 minimum actions — emerge as a global benchmark",
+      "sowhat": "An achievable entry-level floor that corporate buyers, regulators and investors increasingly expect.",
+      "desk_line": "A minimum-floor model you could reference for an ESG-linked baseline tier in SAATHI / classification.",
+      "link": "https://www.hotelmanagement-network.com/news/hotel-sustainability-basics-become-global-industry-benchmark/",
+      "pdf": ""
+    },
+    {
+      "desk": "GLOBAL",
+      "source": "GSTC",
+      "when": "recent",
+      "flag": "watch",
+      "title": "GSTC positioned as the 'standard for standards'; OTAs start prioritising certified properties",
+      "sowhat": "GSTC accredits certifiers rather than certifying hotels directly; Booking.com/Google Travel surface certified stays.",
+      "desk_line": "Accreditation-of-certifiers architecture is a model for how QCI/NIDHI+ could position; ties to your ESG track.",
+      "link": "https://www.gstc.org/",
+      "pdf": ""
+    },
+    {
+      "desk": "GLOBAL",
+      "source": "UN Tourism",
+      "when": "recent",
+      "flag": "watch",
+      "title": "UN Tourism backing national hotel-classification updates: 'business-friendly, future-oriented, guest-centric'",
+      "sowhat": "A 3-year programme to redeploy revised, more credible and guest-focused classification schemes.",
+      "desk_line": "External validation + benchmark language for any move to modernise India's classification criteria.",
+      "link": "https://www.untourism.int/technical-cooperation/the-update-of-hotel-classification-scheme",
+      "pdf": ""
+    }
+  ]
+}

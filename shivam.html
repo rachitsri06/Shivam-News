@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shivam · your standards desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0f1319; --panel:#1b222d; --line:#2a323d;
+    --paper:#f6f3ec; --text:#e9e5da; --muted:#9aa1ad;
+    --signal:#e08a2b; --signal-weak:#3a2a18; --flag:#e0594b; --watch:#e08a2b;
+    --ok:#4fb286; --no:#6b7280;
+    --serif:"Newsreader",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:radial-gradient(120% 90% at 50% -10%,#1a2230 0%,var(--ink) 60%);
+       color:var(--text);font-family:var(--serif);-webkit-font-smoothing:antialiased;overflow:hidden}
+  .screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .5s}
+  .screen.on{opacity:1;pointer-events:auto}
+
+  /* CALL SCREEN */
+  #call{align-items:center;justify-content:center;text-align:center;padding:24px}
+  .avatar{position:relative;width:148px;height:148px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          background:linear-gradient(160deg,#23303f,#141a22);border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .avatar .mono{font-weight:500;font-size:62px;color:var(--signal);line-height:1}
+  .ring{position:absolute;inset:-10px;border-radius:50%;border:2px solid var(--signal);opacity:.5;animation:pulse 2.6s ease-out infinite}
+  .ring.b{animation-delay:1.3s}
+  @keyframes pulse{0%{transform:scale(1);opacity:.5}80%{transform:scale(1.35);opacity:0}100%{opacity:0}}
+  #call h1{font-weight:500;font-size:34px;margin:26px 0 4px}
+  #call .role{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--signal)}
+  #call .meta{color:var(--muted);font-size:16px;margin-top:14px;max-width:360px}
+  .callbtn{margin-top:34px;display:inline-flex;align-items:center;gap:12px;border:none;cursor:pointer;font-family:var(--mono);
+           font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#1a120a;background:var(--signal);
+           padding:16px 30px;border-radius:40px;box-shadow:0 14px 36px rgba(224,138,43,.34);transition:transform .15s,box-shadow .15s}
+  .callbtn:hover{transform:translateY(-2px)} .callbtn:active{transform:scale(.98)}
+  .callbtn .dot{width:10px;height:10px;border-radius:50%;background:#1a120a;animation:blink 1.4s infinite}
+  @keyframes blink{50%{opacity:.3}}
+  #call .hint{margin-top:20px;font-family:var(--mono);font-size:11px;color:#6b7280}
+
+  /* LIVE SCREEN */
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(15,19,25,.7);backdrop-filter:blur(6px)}
+  .mini{width:34px;height:34px;border-radius:50%;background:#141a22;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--signal);font-size:17px;flex:0 0 auto}
+  .who{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+  .who b{font-weight:500;font-size:16px} .who small{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .eq{display:flex;gap:3px;align-items:flex-end;height:18px;margin-left:4px}
+  .eq i{width:3px;background:var(--signal);height:5px;border-radius:2px;opacity:.4}
+  .speaking .eq i{animation:eq .9s ease-in-out infinite}
+  .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}.eq i:nth-child(4){animation-delay:.45s}.eq i:nth-child(5){animation-delay:.6s}
+  @keyframes eq{0%,100%{height:5px;opacity:.4}50%{height:18px;opacity:1}}
+  .end{margin-left:auto;border:1px solid var(--line);background:transparent;color:var(--flag);font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px;border-radius:30px;cursor:pointer}
+  .end:hover{background:#2a1a1a}
+
+  .stage{flex:1;overflow-y:auto;padding:22px 20px 8px;display:flex;flex-direction:column;align-items:center}
+  .stagewrap{width:100%;max-width:640px}
+  .sv{display:none} .sv.on{display:block}
+  .visual{width:100%;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#10151c;margin-bottom:18px;animation:rise .5s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--signal)}
+  .srcline{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:14px 0 8px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .srcline .pill{background:var(--signal-weak);color:var(--signal);padding:2px 9px;border-radius:3px;text-transform:uppercase}
+  .srcline .flag{padding:2px 9px;border-radius:3px;text-transform:uppercase;border:1px solid var(--line)}
+  .srcline .flag.high{background:var(--flag);color:#1a0e0c} .srcline .flag.watch{background:var(--watch);color:#1a120a}
+  .field{transition:opacity .25s;opacity:.5} .field.lit{opacity:1}
+  h2.headline{font-weight:600;font-size:25px;line-height:1.26;margin:6px 0 12px}
+  .sowhat{font-size:18px;line-height:1.5;margin:0 0 14px;color:#dcd8cd}
+  .desk{display:flex;gap:11px;align-items:flex-start;background:#11161d;border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:3px;padding:11px 14px}
+  .desk .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);white-space:nowrap;padding-top:3px}
+  .desk .txt{font-size:16px;line-height:1.45}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px}
+  .chip{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-family:var(--mono);font-size:12px;color:var(--text);border:1px solid var(--line);background:#141a22;padding:9px 14px;border-radius:30px;cursor:pointer;transition:.15s}
+  .chip:hover{border-color:var(--signal);color:var(--signal)}
+
+  /* SUMMARY view */
+  .sumcard{background:#141b24;border:1px solid var(--line);border-radius:16px;padding:22px;animation:rise .5s ease both}
+  .sumcard .tag{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--signal)}
+  .sumcard h2{font-weight:600;font-size:27px;line-height:1.22;margin:10px 0 16px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .stat{flex:1;min-width:90px;background:#10151c;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat b{display:block;font-size:26px;font-weight:600;color:var(--signal)} .stat span{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .hl{display:flex;gap:11px;padding:10px 0;border-top:1px solid var(--line);font-size:16px;line-height:1.4}
+  .hl .n{font-family:var(--mono);color:var(--signal);font-size:13px;padding-top:3px}
+
+  /* DEEP DIVE view */
+  .ddhead{font-weight:600;font-size:24px;line-height:1.25;margin:4px 0 6px}
+  .ddintro{color:#cfcabd;font-size:17px;line-height:1.5;margin:0 0 18px}
+  .scard{background:#141b24;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;transition:border-color .25s,background .25s}
+  .scard.lit{border-color:var(--signal);background:#181f29}
+  .scard .sname{display:flex;align-items:center;gap:10px;font-weight:600;font-size:18px;margin-bottom:9px}
+  .scard .sname .vs{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--signal);background:var(--signal-weak);padding:3px 9px;border-radius:20px}
+  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+  .t2{font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--line);display:inline-flex;gap:6px;align-items:center}
+  .t2 .y{color:var(--ok)} .t2 .x{color:var(--no)}
+  .scard .snote{font-size:15px;line-height:1.45;color:#cfcabd}
+  .takeaway{background:#11161d;border:1px solid var(--line);border-left:3px solid var(--flag);border-radius:3px;padding:13px 15px;margin-top:6px}
+  .takeaway .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--flag)}
+  .takeaway p{margin:6px 0 0;font-size:16px;line-height:1.5}
+
+  /* RECAP view */
+  .recap-h{font-weight:600;font-size:23px;margin:2px 0 16px}
+  .rrow{display:flex;gap:13px;padding:14px 0;border-top:1px solid var(--line);transition:opacity .25s;opacity:.5}
+  .rrow.lit{opacity:1}
+  .rrow .rn{font-family:var(--mono);color:var(--flag);font-size:13px;padding-top:3px}
+  .rrow .rt b{font-weight:600;font-size:18px;display:block;margin-bottom:4px;line-height:1.3}
+  .rrow .rt span{font-size:15px;color:#cfcabd;line-height:1.45}
+
+  /* footer controls */
+  .foot{border-top:1px solid var(--line);background:rgba(15,19,25,.82);backdrop-filter:blur(6px);padding:10px 16px 16px}
+  .progress{display:flex;align-items:center;gap:12px;max-width:640px;margin:0 auto 10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .dots{display:flex;gap:5px;margin-left:auto;flex-wrap:wrap;max-width:55%;justify-content:flex-end}
+  .dots i{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;transition:.2s}
+  .dots i.done{background:#3a4654} .dots i.cur{background:var(--signal);transform:scale(1.25)}
+  .controls{display:flex;align-items:center;justify-content:center;gap:10px;max-width:640px;margin:0 auto}
+  .ctrl{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#141a22;color:var(--text);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+  .ctrl:hover{border-color:var(--signal);color:var(--signal)}
+  .ctrl.play{width:62px;height:62px;background:var(--signal);color:#1a120a;border:none;font-size:24px;box-shadow:0 10px 26px rgba(224,138,43,.34)}
+  .ctrl.small{width:40px;height:40px;font-size:15px}
+  .ctrl.active{border-color:var(--signal);color:var(--signal);background:var(--signal-weak)}
+  .jump{display:flex;gap:6px;justify-content:flex-start;margin-top:12px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .jump button{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap;flex:0 0 auto}
+  .jump button.on{color:var(--signal);border-color:var(--signal)}
+
+  .toast{position:absolute;left:50%;bottom:150px;transform:translateX(-50%) translateY(10px);background:#222b36;border:1px solid var(--line);color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 16px;border-radius:30px;opacity:0;transition:.25s;pointer-events:none;z-index:5}
+  .toast.show{opacity:1;transform:translateX(-50%)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  @media (max-width:560px){h2.headline{font-size:22px}.sumcard h2{font-size:23px}.avatar{width:128px;height:128px}.avatar .mono{font-size:54px}}
+</style>
+</head>
+<body>
+
+<div class="screen on" id="call">
+  <div class="avatar"><span class="ring"></span><span class="ring b"></span><span class="mono">श</span></div>
+  <p class="role" style="margin-top:26px">Tourism Quality &amp; Standards Desk</p>
+  <h1>Shivam</h1>
+  <p class="meta" id="callmeta">Your morning brief is ready.</p>
+  <button class="callbtn" id="callbtn"><span class="dot"></span> Call Shivam</button>
+  <p class="hint">Headphones recommended · summary first, then each desk, then a recap of what matters</p>
+</div>
+
+<div class="screen" id="live">
+  <div class="topbar" id="topbar">
+    <div class="mini">श</div>
+    <div class="who"><b>Shivam</b><small id="status">connecting…</small></div>
+    <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+    <button class="end" id="endbtn">End</button>
+  </div>
+
+  <div class="stage"><div class="stagewrap">
+
+    <div class="sv" id="sv-summary">
+      <div class="sumcard">
+        <span class="tag">Today in 20 seconds</span>
+        <h2 id="sum-head">—</h2>
+        <div class="stats" id="sum-stats"></div>
+        <div id="sum-hls"></div>
+      </div>
+    </div>
+
+    <div class="sv" id="sv-item">
+      <div class="visual" id="visual"></div>
+      <div class="eyebrow" id="eyebrow">—</div>
+      <div class="srcline" id="srcline"></div>
+      <h2 class="headline field" id="f-head">—</h2>
+      <p class="sowhat field" id="f-so">—</p>
+      <div class="desk field" id="f-desk"><span class="lbl">Your desk</span><span class="txt" id="f-desk-txt">—</span></div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="sv" id="sv-deep">
+      <div class="eyebrow">Deep dive · centre vs the states</div>
+      <h2 class="ddhead" id="dd-head">—</h2>
+      <p class="ddintro" id="dd-intro">—</p>
+      <div id="dd-cards"></div>
+      <div class="takeaway"><span class="lbl">Strategic read</span><p id="dd-take">—</p></div>
+    </div>
+
+    <div class="sv" id="sv-recap">
+      <div class="eyebrow">Recap</div>
+      <h2 class="recap-h" id="rc-head">The items that matter most today</h2>
+      <div id="rc-list"></div>
+    </div>
+
+  </div></div>
+
+  <div class="foot">
+    <div class="progress"><span id="ptext">—</span><span class="dots" id="dots"></span></div>
+    <div class="controls">
+      <button class="ctrl small" id="micbtn" title="Voice commands">🎙</button>
+      <button class="ctrl" id="prevbtn" title="Previous">⏮</button>
+      <button class="ctrl" id="replaybtn" title="Replay">↻</button>
+      <button class="ctrl play" id="playbtn" title="Play / pause">⏸</button>
+      <button class="ctrl" id="nextbtn" title="Next">⏭</button>
+      <button class="ctrl small" id="srcbtn" title="Open source">↗</button>
+    </div>
+    <div class="jump" id="jump"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DESKLABEL={NIDHI:"NIDHI & the Ministry",STATE:"The States — standards & compliance",GLOBAL:"Global desk — best practice"};
+
+const FALLBACK={
+ date:"today", reader:"Rachit",
+ summary:{
+   headline:"States go mandatory as the centre narrows NIDHI+'s role",
+   spoken:"Here is your brief in twenty seconds. Nine items today across three desks, two flagged for action. The big one: the Ministry has stopped accepting project approvals for under-construction hotels. And the thread to watch — states are building their own mandatory registration regimes, with Uttarakhand the newest this week.",
+   highlights:[
+     "Ministry discontinues project approvals for under-construction hotels (16 March).",
+     "Uttarakhand makes registration mandatory for all tourism units, with homestay classification built in.",
+     "Globally, WTTC and GSTC sustainability floors are becoming the benchmark buyers expect."
+   ]
+ },
+ items:[
+  {desk:"NIDHI",source:"Ministry of Tourism",when:"16 Mar",flag:"high",
+   title:"Ministry discontinues the Voluntary Scheme of Project Approvals for under-construction hospitality units",
+   sowhat:"From the sixteenth of March twenty twenty six, no fresh project-approval applications are accepted at the construction or pre-construction stage.",
+   desk_line:"This directly changes NIDHI+ intake — a concrete line for your Secretary reform briefing and the work-order narrative.",
+   link:"https://nidhi.tourism.gov.in/", pdf:"https://nidhi.tourism.gov.in/home/page/guidelines"},
+  {desk:"NIDHI",source:"Travel Trade Journal",when:"recent",flag:"watch",
+   title:"Ministry tells Lok Sabha that NIDHI+ is the single online system for classification and service-provider recognition",
+   sowhat:"The Ministry frames NIDHI+ as the system of record for classifying accommodation units and recognising tourism service providers.",
+   desk_line:"Useful framing language for positioning NIDHI+ value and the unpaid work-order case.",
+   link:"https://traveltradejournal.com/ministry-of-tourism-streamlines-hospitality-approvals-and-classification-via-nidhi-portal/", pdf:""},
+  {desk:"STATE",source:"Pioneer Edge",when:"this week",flag:"high",
+   title:"Uttarakhand notifies Tourism and Travel Business Registration Rules 2026 — one framework for all units",
+   sowhat:"Registration with the state board becomes mandatory for hotels, homestays, bed-and-breakfasts, agents and adventure operators, valid five years, with homestay classification built in.",
+   desk_line:"A state building a parallel registration and classification regime beside NIDHI+ — the central-versus-state interface is your core domain.",
+   link:"https://pioneeredge.in/new-tourism-registration-rules-in-force-homestays-under-one-framework/", pdf:""},
+  {desk:"STATE",source:"Business Standard",when:"recent",flag:"watch",
+   title:"Rajasthan Homestay Scheme 2026: single-window digital approval, rooms raised from five to eight",
+   sowhat:"The owner-residence requirement is dropped, a caretaker model is allowed, and registration is faster and fully digital to grow rural homestays.",
+   desk_line:"A light-touch state compliance model, plus the rural and community-tourism livelihood framing you're positioning around.",
+   link:"https://www.business-standard.com/industry/news/rajasthan-unveils-homestay-scheme-2026-to-boost-tourism-126022300883_1.html", pdf:""},
+  {desk:"STATE",source:"Deccan Herald",when:"recent",flag:"watch",
+   title:"Uttar Pradesh approves its first dedicated Homestay and B&B Policy and mandates local-body NOCs",
+   sowhat:"Until now these units registered through NIDHI+; the new state policy layers local no-objection certificates and incentives on top.",
+   desk_line:"Shows states layering local compliance over NIDHI+ — directly relevant to SAATHI self-certification scope.",
+   link:"https://www.deccanherald.com/india/uttar-pradesh/up-govt-approves-homestay-bed-and-breakfast-policy-to-boost-tourism-3569077", pdf:""},
+  {desk:"STATE",source:"NewsOnAir",when:"recent",flag:"watch",
+   title:"Meghalaya makes guest registration through its state tourism app compulsory",
+   sowhat:"Safety-driven mandatory digital guest registration now applies across homestays, resorts and landlords in the state.",
+   desk_line:"A compliance-as-safety angle, and a state digital guest registry that parallels NIDHI's data role.",
+   link:"https://www.newsonair.gov.in/meghalaya-govt-directs-mandatory-visitor-registration-after-murder-incident", pdf:""},
+  {desk:"GLOBAL",source:"Hotel Management",when:"recent",flag:"watch",
+   title:"WTTC Hotel Sustainability Basics — twelve minimum actions — emerge as a global benchmark",
+   sowhat:"An achievable entry-level floor that corporate buyers, regulators and investors increasingly expect from hotels.",
+   desk_line:"A minimum-floor model you could reference for an ESG-linked baseline tier in SAATHI or classification.",
+   link:"https://www.hotelmanagement-network.com/news/hotel-sustainability-basics-become-global-industry-benchmark/", pdf:""},
+  {desk:"GLOBAL",source:"GSTC",when:"recent",flag:"watch",
+   title:"GSTC positioned as the standard for standards, with OTAs prioritising certified properties",
+   sowhat:"GSTC accredits certifiers rather than certifying hotels directly, while Booking and Google Travel surface certified stays.",
+   desk_line:"The accreditation-of-certifiers architecture is a model for how QCI and NIDHI+ could position; it ties to your ESG track.",
+   link:"https://www.gstc.org/", pdf:""},
+  {desk:"GLOBAL",source:"UN Tourism",when:"recent",flag:"watch",
+   title:"UN Tourism backs national hotel-classification updates that are business-friendly and guest-centric",
+   sowhat:"A three-year programme to redeploy revised, more credible and guest-focused classification schemes.",
+   desk_line:"External validation and benchmark language for any move to modernise India's classification criteria.",
+   link:"https://www.untourism.int/technical-cooperation/the-update-of-hotel-classification-scheme", pdf:""}
+ ],
+ deepdive:{
+   head:"The centre is going voluntary while the states go mandatory",
+   intro:"NIDHI+ is a voluntary national scheme — and the Ministry has just narrowed it further by ending project approvals. But several states are moving the opposite way: making registration compulsory, and in Uttarakhand's case running their own classification. Here's where each one stands.",
+   take:"The risk is NIDHI+ becoming one registry among many. The opportunity is to position it as the interoperable national spine that state systems plug into — a strong, defensible line for your reform note and the work-order case.",
+   states:[
+     {name:"Centre · NIDHI+ (MoT)", vs:"The national scheme", mandatory:false, ownclass:true, validity:"Voluntary",
+      note:"Voluntary star classification; project approvals for under-construction units stopped on 16 March 2026."},
+     {name:"Uttarakhand", vs:"Parallel regime", mandatory:true, ownclass:true, validity:"5-year + renewal",
+      note:"2026 Rules: one mandatory framework for every unit, with homestay and B&B classification built in."},
+     {name:"Rajasthan", vs:"State-run, lighter", mandatory:true, ownclass:false, validity:"Single-window",
+      note:"Homestay Scheme 2026: fast digital approval, rooms raised 5 to 8, owner-residence rule dropped."},
+     {name:"Uttar Pradesh", vs:"Layers on NIDHI+", mandatory:true, ownclass:false, validity:"Policy + NOC",
+      note:"First dedicated state homestay/B&B policy; local-body NOC now mandatory on top of NIDHI+ listing."},
+     {name:"Meghalaya", vs:"Own data registry", mandatory:true, ownclass:false, validity:"App-based",
+      note:"Mandatory guest registration via the state tourism app, driven by visitor-safety concerns."}
+   ]
+ }
+};
+
+let DATA=FALLBACK, PLAY=[], cur=0, runId=0, playing=false;
+const ttsOK=("speechSynthesis" in window); let voice=null, recog=null, listening=false;
+const $=id=>document.getElementById(id);
+
+function pickVoice(){ if(!ttsOK)return; const vs=speechSynthesis.getVoices();
+  voice=vs.find(v=>v.lang==="en-IN")||vs.find(v=>/India/i.test(v.name))
+      ||vs.find(v=>/en-GB/i.test(v.lang)&&/male|daniel|arthur/i.test(v.name))
+      ||vs.find(v=>/^en/i.test(v.lang))||vs[0]||null; }
+if(ttsOK){speechSynthesis.onvoiceschanged=pickVoice;pickVoice();}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1900);}
+
+function scene(desk,flag){
+  const sig=flag==="high"?"#e0594b":"#e08a2b";
+  if(desk==="NIDHI") return `<svg viewBox="0 0 640 240" width="100%" role="img" aria-label="Ministry"><rect width="640" height="240" fill="#10151c"/><g stroke="#243040" stroke-width="1">${Array.from({length:9},(_,i)=>`<line x1="${i*80}" y1="0" x2="${i*80}" y2="240"/>`).join("")}</g><rect x="220" y="92" width="200" height="118" rx="6" fill="#19212c" stroke="#33414f"/><rect x="220" y="92" width="200" height="22" rx="6" fill="#202c3a"/>${[0,1,2].map(r=>[0,1,2,3].map(c=>`<rect x="${236+c*44}" y="${128+r*26}" width="30" height="14" rx="2" fill="#26323f"/>`).join("")).join("")}<g transform="translate(320,64)"><path d="M0,-30 L8.8,-9.3 L31,-6.9 L14.5,8 L19,30 L0,18.6 L-19,30 L-14.5,8 L-31,-6.9 L-8.8,-9.3 Z" fill="${sig}"><animate attributeName="opacity" values="0.65;1;0.65" dur="2.6s" repeatCount="indefinite"/></path></g><text x="320" y="228" text-anchor="middle" fill="#5d6b7a" font-family="IBM Plex Mono,monospace" font-size="11" letter-spacing="3">NIDHI+ · CLASSIFICATION</text></svg>`;
+  if(desk==="STATE") return `<svg viewBox="0 0 640 240" width="100%" role="img" aria-label="State"><rect width="640" height="240" fill="#10151c"/><g fill="none" stroke="#243040" stroke-width="1">${Array.from({length:7},(_,i)=>`<path d="M${40+i*95},40 q40,80 0,160"/>`).join("")}</g><g transform="translate(320,120)"><circle r="58" fill="none" stroke="${sig}" stroke-width="1.5" stroke-dasharray="4 7" opacity=".7"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="22s" repeatCount="indefinite"/></circle><path d="M0,-34 C20,-34 30,-18 30,-4 C30,16 6,34 0,44 C-6,34 -30,16 -30,-4 C-30,-18 -20,-34 0,-34 Z" fill="${sig}"/><circle cy="-6" r="10" fill="#10151c"/></g><text x="320" y="228" text-anchor="middle" fill="#5d6b7a" font-family="IBM Plex Mono,monospace" font-size="11" letter-spacing="3">STATE REGISTRATION &amp; COMPLIANCE</text></svg>`;
+  return `<svg viewBox="0 0 640 240" width="100%" role="img" aria-label="Global"><rect width="640" height="240" fill="#10151c"/><g transform="translate(320,118)"><circle r="62" fill="#16202b" stroke="#33414f"/><g stroke="#2c3a48" stroke-width="1" fill="none"><ellipse rx="62" ry="24"/><ellipse rx="40" ry="62"/><ellipse rx="62" ry="44"/><line x1="-62" y1="0" x2="62" y2="0"/></g><circle r="62" fill="none" stroke="${sig}" stroke-width="2" stroke-dasharray="150 240" opacity=".85"><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="14s" repeatCount="indefinite"/></circle><g transform="translate(40,-40)"><circle r="14" fill="${sig}"/><path d="M-6,0 l4,5 l8,-10" stroke="#10151c" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g><text x="320" y="226" text-anchor="middle" fill="#5d6b7a" font-family="IBM Plex Mono,monospace" font-size="11" letter-spacing="3">GLOBAL BEST PRACTICE</text></svg>`;
+}
+
+function buildPlaylist(){
+  PLAY=[{kind:"summary"}];
+  DATA.items.forEach(it=>PLAY.push({kind:"item",it}));
+  if(DATA.deepdive&&DATA.deepdive.states) PLAY.push({kind:"deep"});
+  const highs=DATA.items.filter(x=>x.flag==="high");
+  if(highs.length) PLAY.push({kind:"recap",highs});
+}
+function buildDots(){
+  $("dots").innerHTML=PLAY.map((_,i)=>`<i data-i="${i}" class="${i<cur?'done':''} ${i===cur?'cur':''}"></i>`).join("");
+  $("dots").querySelectorAll("i").forEach(d=>d.onclick=()=>goTo(+d.dataset.i));
+}
+function buildJump(){
+  const tabs=[["summary","Summary"],["NIDHI","Ministry"],["STATE","States"],["GLOBAL","Global"],["deep","Deep dive"],["recap","Recap"]];
+  $("jump").innerHTML=tabs.map(t=>`<button data-k="${t[0]}">${t[1]}</button>`).join("");
+  $("jump").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k; let idx=-1;
+    if(k==="summary")idx=PLAY.findIndex(s=>s.kind==="summary");
+    else if(k==="deep")idx=PLAY.findIndex(s=>s.kind==="deep");
+    else if(k==="recap")idx=PLAY.findIndex(s=>s.kind==="recap");
+    else idx=PLAY.findIndex(s=>s.kind==="item"&&s.it.desk===k);
+    if(idx>=0)goTo(idx);
+  });
+}
+function showView(kind){["summary","item","deep","recap"].forEach(k=>$("sv-"+k).classList.toggle("on",k===kind));}
+
+function render(i){
+  const seg=PLAY[i], it0=seg;
+  if(seg.kind==="summary"){
+    showView("summary");
+    $("sum-head").textContent=DATA.summary.headline;
+    const flagged=DATA.items.filter(x=>x.flag==="high").length;
+    $("sum-stats").innerHTML=
+      `<div class="stat"><b>${DATA.items.length}</b><span>Items</span></div>`+
+      `<div class="stat"><b>${flagged}</b><span>Flagged</span></div>`+
+      `<div class="stat"><b>4</b><span>Desks</span></div>`;
+    $("sum-hls").innerHTML=DATA.summary.highlights.map((h,n)=>`<div class="hl"><span class="n">0${n+1}</span><span>${h}</span></div>`).join("");
+    $("ptext").textContent="Summary · today in 20 seconds";
+  } else if(seg.kind==="item"){
+    showView("item"); const it=seg.it;
+    $("visual").innerHTML=scene(it.desk,it.flag);
+    $("eyebrow").textContent=DESKLABEL[it.desk]||it.desk;
+    $("srcline").innerHTML=`<span class="pill">${it.source}</span><span>${it.when}</span>`+(it.flag==="high"?`<span class="flag high">Brief on it</span>`:it.flag==="watch"?`<span class="flag watch">Watch</span>`:``);
+    $("f-head").textContent=it.title; $("f-so").textContent=it.sowhat; $("f-desk-txt").textContent=it.desk_line;
+    const yt="https://www.youtube.com/results?search_query="+encodeURIComponent(it.title);
+    let c=`<a class="chip" href="${it.link}" target="_blank" rel="noopener">↗ Source</a><a class="chip" href="${yt}" target="_blank" rel="noopener">▶ Watch related</a>`;
+    if(it.pdf)c+=`<a class="chip" href="${it.pdf}" target="_blank" rel="noopener">▤ Document</a>`;
+    $("chips").innerHTML=c;
+    const di=DATA.items.indexOf(it);
+    $("ptext").textContent=`Item ${di+1} of ${DATA.items.length} · ${DESKLABEL[it.desk]}`;
+    lit(null);
+  } else if(seg.kind==="deep"){
+    showView("deep"); const d=DATA.deepdive;
+    $("dd-head").textContent=d.head; $("dd-intro").textContent=d.intro; $("dd-take").textContent=d.take;
+    $("dd-cards").innerHTML=d.states.map((s,n)=>`
+      <div class="scard" id="dd-s${n}">
+        <div class="sname">${s.name}<span class="vs">${s.vs}</span></div>
+        <div class="tags">
+          <span class="t2">Registration <span class="${s.mandatory?'y':'x'}">${s.mandatory?'mandatory ✓':'voluntary'}</span></span>
+          <span class="t2">Own classification <span class="${s.ownclass?'y':'x'}">${s.ownclass?'yes ✓':'no'}</span></span>
+          <span class="t2">${s.validity}</span>
+        </div>
+        <div class="snote">${s.note}</div>
+      </div>`).join("");
+    $("ptext").textContent="Deep dive · centre vs the states";
+  } else if(seg.kind==="recap"){
+    showView("recap");
+    $("rc-list").innerHTML=seg.highs.map((h,n)=>`
+      <div class="rrow" id="rc-r${n}"><span class="rn">★ 0${n+1}</span>
+      <div class="rt"><b>${h.title}</b><span>${h.sowhat}</span></div></div>`).join("");
+    $("ptext").textContent="Recap · what matters most";
+  }
+  buildDots();
+  const seg2=PLAY[i];
+  const activeKey=seg2.kind==="item"?seg2.it.desk:seg2.kind;
+  $("jump").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.k===(seg2.kind==="summary"?"summary":seg2.kind==="deep"?"deep":seg2.kind==="recap"?"recap":activeKey)));
+}
+function lit(field){["f-head","f-so","f-desk"].forEach(id=>$(id).classList.remove("lit")); if(field)$(field).classList.add("lit");}
+
+function setSpeaking(on){$("topbar").classList.toggle("speaking",on);}
+function say(text){return new Promise(res=>{
+  if(!ttsOK){setTimeout(res,Math.min(5600,900+text.length*42));return;}
+  const u=new SpeechSynthesisUtterance(text); if(voice)u.voice=voice; u.rate=1.0; u.pitch=1.0; u.lang=(voice&&voice.lang)||"en-IN";
+  u.onend=res; u.onerror=res; speechSynthesis.speak(u);
+});}
+
+function utterancesFor(seg){
+  if(seg.kind==="summary") return [["",DATA.summary.spoken]];
+  if(seg.kind==="item"){const it=seg.it; const di=DATA.items.indexOf(it);
+    return [["f-head",`Item ${di+1}. ${it.title}.`],["f-so",it.sowhat],["f-desk",`Why it's on your desk. ${it.desk_line}`]];}
+  if(seg.kind==="deep"){const d=DATA.deepdive;
+    const arr=[["",`Deep dive. ${d.head}.`],["",d.intro]];
+    d.states.forEach((s,n)=>arr.push([`dd-s${n}`,`${s.name}. ${s.note}`]));
+    arr.push(["",`The strategic read. ${d.take}`]); return arr;}
+  if(seg.kind==="recap"){const arr=[["","Before we wrap, the items that matter most today."]];
+    seg.highs.forEach((h,n)=>arr.push([`rc-r${n}`,`${h.title}. ${h.sowhat}`]));
+    arr.push(["","That's your brief. Have a sharp day."]); return arr;}
+  return [];
+}
+function highlight(seg,elId){
+  if(seg.kind==="item"){lit(elId);}
+  else if(seg.kind==="deep"){document.querySelectorAll(".scard").forEach(c=>c.classList.remove("lit")); if(elId&&$(elId))$(elId).classList.add("lit");}
+  else if(seg.kind==="recap"){document.querySelectorAll(".rrow").forEach(c=>c.classList.remove("lit")); if(elId&&$(elId))$(elId).classList.add("lit");}
+}
+
+async function playSeg(i){
+  const myRun=++runId; cur=i; render(i);
+  const seg=PLAY[i];
+  $("status").textContent=seg.kind==="summary"?"Summary":seg.kind==="deep"?"Deep dive":seg.kind==="recap"?"Recap":`Briefing · ${DESKLABEL[seg.it.desk]}`;
+  setSpeaking(true);
+  for(const [el,text] of utterancesFor(seg)){
+    if(myRun!==runId)return;
+    highlight(seg,el); await say(text);
+  }
+  if(myRun!==runId)return;
+  setSpeaking(false);
+  if(i+1<PLAY.length){playSeg(i+1);}
+  else{$("status").textContent="Brief complete";playing=false;syncPlay();}
+}
+async function startBrief(){
+  const myRun=++runId; playing=true; syncPlay(); $("status").textContent="Connecting…"; setSpeaking(true);
+  await say(`Good morning ${DATA.reader}. Your standards brief for ${DATA.date} is ready.`);
+  if(myRun!==runId)return; playSeg(0);
+}
+function stopSpeak(){runId++; if(ttsOK)speechSynthesis.cancel(); setSpeaking(false);}
+function syncPlay(){$("playbtn").textContent=playing?"⏸":"▶";}
+function pause(){if(!playing)return; stopSpeak(); playing=false; syncPlay(); $("status").textContent="Paused";}
+function resume(){if(playing)return; playing=true; syncPlay(); playSeg(cur);}
+function togglePlay(){playing?pause():resume();}
+function goTo(i){i=Math.max(0,Math.min(PLAY.length-1,i)); stopSpeak(); playing=true; syncPlay(); playSeg(i);}
+function next(){goTo(cur+1);} function prev(){goTo(cur-1);} function replay(){goTo(cur);}
+
+$("playbtn").onclick=togglePlay; $("nextbtn").onclick=next; $("prevbtn").onclick=prev; $("replaybtn").onclick=replay;
+$("srcbtn").onclick=()=>{const s=PLAY[cur]; if(s.kind==="item")window.open(s.it.link,"_blank","noopener"); else toast("No single source for this section");};
+$("endbtn").onclick=endCall;
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function toggleMic(){
+  if(!SR){toast("Voice commands need Chrome or Edge");return;}
+  if(listening){recog.stop();return;}
+  recog=new SR(); recog.continuous=true; recog.interimResults=false; recog.lang="en-IN";
+  recog.onstart=()=>{listening=true;$("micbtn").classList.add("active");toast("Listening — next, repeat, pause, summary, recap…");};
+  recog.onend=()=>{listening=false;$("micbtn").classList.remove("active");};
+  recog.onerror=()=>{listening=false;$("micbtn").classList.remove("active");};
+  recog.onresult=e=>{const s=e.results[e.results.length-1][0].transcript.toLowerCase();
+    if(/next|forward|skip/.test(s))next();
+    else if(/back|previous|prev/.test(s))prev();
+    else if(/repeat|again|replay/.test(s))replay();
+    else if(/pause|wait|hold/.test(s))pause();
+    else if(/resume|continue|go on|play/.test(s))resume();
+    else if(/summary|overview/.test(s)){const i=PLAY.findIndex(x=>x.kind==="summary");if(i>=0)goTo(i);}
+    else if(/deep|divergence|states compare/.test(s)){const i=PLAY.findIndex(x=>x.kind==="deep");if(i>=0)goTo(i);}
+    else if(/recap|important|matters/.test(s)){const i=PLAY.findIndex(x=>x.kind==="recap");if(i>=0)goTo(i);}
+    else if(/source|open|link/.test(s)){const x=PLAY[cur];if(x.kind==="item")window.open(x.it.link,"_blank","noopener");}
+    else if(/hang up|end call|goodbye|bye/.test(s))endCall();
+  };
+  recog.start();
+}
+$("micbtn").onclick=toggleMic;
+
+function connect(){$("call").classList.remove("on");$("live").classList.add("on");buildPlaylist();buildJump();render(0);startBrief();}
+function endCall(){stopSpeak();playing=false;if(recog)try{recog.stop()}catch(e){}$("live").classList.remove("on");$("call").classList.add("on");}
+$("callbtn").onclick=()=>{if(ttsOK){const w=new SpeechSynthesisUtterance(" ");speechSynthesis.speak(w);}connect();};
+
+document.addEventListener("keydown",e=>{
+  if($("live").classList.contains("on")){
+    if(e.code==="Space"){e.preventDefault();togglePlay();}
+    if(e.code==="ArrowRight")next(); if(e.code==="ArrowLeft")prev(); if(e.key==="Escape")endCall();
+  } else if(e.code==="Space"||e.code==="Enter"){e.preventDefault();$("callbtn").click();}
+});
+
+(async()=>{
+  try{const r=await fetch("brief.json",{cache:"no-store"}); if(r.ok){const j=await r.json(); if(j&&j.items&&j.items.length)DATA=j;}}catch(e){}
+  const d=(DATA.date&&DATA.date!=="today")?DATA.date:new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
+  DATA.date=d; if(!DATA.summary)DATA.summary=FALLBACK.summary; if(!DATA.deepdive)DATA.deepdive=FALLBACK.deepdive;
+  $("callmeta").textContent=`Your standards brief for ${d} — summary, ${DATA.items.length} items, a deep dive and a recap.`;
+})();
+</script>
+</body>
+</html>
