@@ -1,0 +1,47 @@
+name: Daily Standards Brief (Shivam)
+
+# 01:30 UTC = 07:00 AM IST
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install feedparser anthropic
+
+      - name: Build today's brief
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SMTP_HOST:  ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:  ${{ secrets.SMTP_PORT }}
+          SMTP_USER:  ${{ secrets.SMTP_USER }}
+          SMTP_PASS:  ${{ secrets.SMTP_PASS }}
+          MAIL_TO:    ${{ secrets.MAIL_TO }}
+        run: |
+          # Build brief.json + standards_brief.html
+          python tourism_brief.py
+          # Email if SMTP creds are set
+          if [ -n "$SMTP_HOST" ] && [ -n "$SMTP_USER" ] && [ -n "$SMTP_PASS" ]; then
+            python tourism_brief.py --email
+          fi
+
+      - name: Publish brief.json + HTML for Shivam
+        run: |
+          git config user.name  "shivam-bot"
+          git config user.email "actions@github.com"
+          git add brief.json standards_brief.html
+          git commit -m "Brief: $(date -u +%Y-%m-%d)" || echo "no changes"
+          git push
