@@ -135,9 +135,9 @@
   <div class="avatar"><span class="ring"></span><span class="ring b"></span><span class="mono">श</span></div>
   <p class="role" style="margin-top:26px">Tourism Quality &amp; Standards Desk</p>
   <h1>Shivam</h1>
-  <p class="meta" id="callmeta">Your morning brief is ready.</p>
-  <button class="callbtn" id="callbtn"><span class="dot"></span> Call Shivam</button>
-  <p class="hint">Headphones recommended · summary first, then each desk, then a recap of what matters</p>
+  <p class="meta" id="callmeta">Aapka morning brief tayaar hai.</p>
+  <button class="callbtn" id="callbtn"><span class="dot"></span> Shivam ko Call Karen</button>
+  <p class="hint">Headphones lagaiye · pehle summary, phir har desk, phir recap</p>
 </div>
 
 <div class="screen" id="live">
@@ -286,8 +286,10 @@ const ttsOK=("speechSynthesis" in window); let voice=null, recog=null, listening
 const $=id=>document.getElementById(id);
 
 function pickVoice(){ if(!ttsOK)return; const vs=speechSynthesis.getVoices();
-  voice=vs.find(v=>v.lang==="en-IN")||vs.find(v=>/India/i.test(v.name))
-      ||vs.find(v=>/en-GB/i.test(v.lang)&&/male|daniel|arthur/i.test(v.name))
+  voice=vs.find(v=>v.lang==="hi-IN")
+      ||vs.find(v=>/hindi/i.test(v.name))
+      ||vs.find(v=>v.lang==="en-IN")
+      ||vs.find(v=>/India/i.test(v.name))
       ||vs.find(v=>/^en/i.test(v.lang))||vs[0]||null; }
 if(ttsOK){speechSynthesis.onvoiceschanged=pickVoice;pickVoice();}
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),1900);}
@@ -380,21 +382,21 @@ function lit(field){["f-head","f-so","f-desk"].forEach(id=>$(id).classList.remov
 function setSpeaking(on){$("topbar").classList.toggle("speaking",on);}
 function say(text){return new Promise(res=>{
   if(!ttsOK){setTimeout(res,Math.min(5600,900+text.length*42));return;}
-  const u=new SpeechSynthesisUtterance(text); if(voice)u.voice=voice; u.rate=1.0; u.pitch=1.0; u.lang=(voice&&voice.lang)||"en-IN";
+  const u=new SpeechSynthesisUtterance(text); if(voice)u.voice=voice; u.rate=0.92; u.pitch=1.05; u.lang=(voice&&voice.lang)||"hi-IN";
   u.onend=res; u.onerror=res; speechSynthesis.speak(u);
 });}
 
 function utterancesFor(seg){
   if(seg.kind==="summary") return [["",DATA.summary.spoken]];
   if(seg.kind==="item"){const it=seg.it; const di=DATA.items.indexOf(it);
-    return [["f-head",`Item ${di+1}. ${it.title}.`],["f-so",it.sowhat],["f-desk",`Why it's on your desk. ${it.desk_line}`]];}
+    return [["f-head",`Item number ${di+1}. ${it.title}.`],["f-so",it.sowhat],["f-desk",`Aapke desk ke liye — ${it.desk_line}`]];}
   if(seg.kind==="deep"){const d=DATA.deepdive;
-    const arr=[["",`Deep dive. ${d.head}.`],["",d.intro]];
+    const arr=[["",`Ab karte hain deep dive. ${d.head}.`],["",d.intro]];
     d.states.forEach((s,n)=>arr.push([`dd-s${n}`,`${s.name}. ${s.note}`]));
-    arr.push(["",`The strategic read. ${d.take}`]); return arr;}
-  if(seg.kind==="recap"){const arr=[["","Before we wrap, the items that matter most today."]];
+    arr.push(["",`Strategic read — ${d.take}`]); return arr;}
+  if(seg.kind==="recap"){const arr=[["","Theek hai, ab recap karte hain. Aaj ke sabse important items."]];
     seg.highs.forEach((h,n)=>arr.push([`rc-r${n}`,`${h.title}. ${h.sowhat}`]));
-    arr.push(["","That's your brief. Have a sharp day."]); return arr;}
+    arr.push(["","Bas, yahi tha aaj ka brief. Bahut badhiya din ho aapka!"]); return arr;}
   return [];
 }
 function highlight(seg,elId){
@@ -419,7 +421,7 @@ async function playSeg(i){
 }
 async function startBrief(){
   const myRun=++runId; playing=true; syncPlay(); $("status").textContent="Connecting…"; setSpeaking(true);
-  await say(`Good morning ${DATA.reader}. Your standards brief for ${DATA.date} is ready.`);
+  await say(`Namaste ${DATA.reader} ji! Aapka Standards Brief tayaar hai — ${DATA.date} ke liye. Suniye dhyan se.`);
   if(myRun!==runId)return; playSeg(0);
 }
 function stopSpeak(){runId++; if(ttsOK)speechSynthesis.cancel(); setSpeaking(false);}
